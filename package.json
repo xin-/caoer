@@ -1,6 +1,6 @@
 {
   "name": "caoer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "a webpack-cli",
   "main": "./lib/cli.js",
   "bin": {
