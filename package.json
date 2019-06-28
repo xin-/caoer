@@ -1,10 +1,10 @@
 {
-  "name": "cao",
+  "name": "caoer",
   "version": "1.0.0",
   "description": "a webpack-cli",
   "main": "index.js",
   "bin": {
-    "cao": "./lib/cli.js"
+    "caoer": "./lib/cli.js"
   },
   "scripts": {
     "start": "nodemon -w src --exec babel src --out-dir lib"
@@ -39,7 +39,9 @@
     "https": "^1.0.0",
     "json-loader": "^0.5.7",
     "less": "^3.9.0",
+    "less-loader": "^5.0.0",
     "mockjs": "^1.0.1-beta3",
+    "ora": "^3.4.0",
     "postcss-loader": "^3.0.0",
     "precss": "^4.0.0",
     "resolve-url-loader": "^3.1.0",
@@ -52,5 +54,10 @@
     "webpack": "^4.35.0",
     "webpack-dev-middleware": "^3.7.0",
     "webpack-hot-middleware": "^2.25.0"
-  }
+  },
+  "browserslist": [
+    "last 2 version",
+    "not dead",
+    "iOS >= 9"
+  ]
 }

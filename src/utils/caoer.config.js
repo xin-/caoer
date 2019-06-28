@@ -13,7 +13,7 @@ export default {
 
     // CDN domain, or just leave it blank if not using
     "static": {
-        "start"         :   "",                         // here use relative path
+        "start"         :   "/",                         // here use relative path
         "test"          :   "",
         "pre"           :   "http://static.wepiao.com/",// here use CDN domain
         "release"       :   "http://static.wepiao.com/" // here use CDN domain
@@ -32,7 +32,7 @@ export default {
     },
 
     // third patry libs to bundle
-    "vendor": ["react", "react-dom"],
+    "vendor": ["vue", "vuex"],
 
     // dir alias, could use globally, despite of CWD
     "alias": {
@@ -48,7 +48,6 @@ export default {
     "externals": {},
     
     // modules alias
-    // { 'react': 'react-lite', 'react-dom': 'react-lite' }
     "alias_modules": {},
 
     // source map options
@@ -72,11 +71,13 @@ export default {
     // custom default page dir
     "pages": {
         "index": {
-            "title"         :   "",                         // inner template document title
-            "keywords"      :   "",                         // inner template meta keywords
-            "description"   :   "",                         // inner template meta description
-            "viewport"      :   "",                         // inner template meta viewport
-            "path"          :   ""                          // custom template path, omit it if your desire to use inner template
+            "favicon"       :   "./src/images/googlelogo_color_272x92dp.png",
+            "title"         :   "草儿2",                         // inner template document title
+            "keywords"      :   "sdfsdfsdfsdf",                         // inner template meta keywords
+            "description"   :   "sdfsdfs",                         // inner template meta description
+            "viewport"      :   "sfdsfsfs",                         // inner template meta viewport
+            "path"          :   "template.html",                          // custom template path, omit it if your desire to use inner template
+            "entry"         :   "./src/index.js"                          // custom template path, omit it if your desire to use inner template
         }
     },
 

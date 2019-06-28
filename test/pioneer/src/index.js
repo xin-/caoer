@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import $ from 'jquery';
 import './index.less';
-import Img from './images/2019-womens-world-cup-day-17-5428967486521344-law.gif';
+import Img from './images/googlelogo_color_272x92dp.png';
 
 function component() {
   var element = document.createElement('div');

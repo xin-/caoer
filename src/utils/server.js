@@ -9,9 +9,11 @@ import webpack from 'webpack'
 import shell from 'shelljs'
 import proxy from 'http-proxy-middleware'
 import webpackDevMiddleware from 'webpack-dev-middleware'
+import webpackHotMiddleware from 'webpack-hot-middleware'
 import getWebpackConfigDev from '../webpack/dev'
 import chalk from 'chalk';
 import Mock from 'mockjs'
+import https from 'https'
 
 const CWD = process.cwd()
 
@@ -20,18 +22,18 @@ function start (caoerConfig) {
     const config = getWebpackConfigDev(caoerConfig)
     const compiler = webpack(config)
     const is_start = process.env.MODE == 'start'
-    const https = import(https)
-    const httpsServer = https.createServer(credentials, app)
-    const cerdentials = {
+    console.log(path.resolve(__dirname, './private.pem'))
+    const credentials = {
         key: fs.readFileSync(path.resolve(__dirname, './private.pem'), 'utf8'),
         cert: fs.readFileSync(path.resolve(__dirname, './file.crt'), 'utf8')
     }
+    const httpsServer = https.createServer(credentials, app)
 
     httpsServer.listen(443, function() {
-        cnosole.log(chalk.green('https-server is running on 443'))
+        console.log(chalk.green('https-server is running on 443'))
     })
 
-    is_start && app.use(import('webpack-dev-middleware')(
+    is_start && app.use(webpackDevMiddleware(
         compiler,
         {
             noInfo: false,
@@ -44,7 +46,7 @@ function start (caoerConfig) {
         }
     ))
 
-    is_start && app.use(import('webpack-hot-middleware')(compiler))
+    is_start && app.use(webpackHotMiddleware(compiler))
 
     // Mock Server
     var mockConfigPath = path.resolve(CWD, 'mock.js')
@@ -92,7 +94,13 @@ function start (caoerConfig) {
             return;
         }
 
-        console.log('🌎  Listening at http://' + caoerConfig.host + ':' + caoerConfig.port, browserToOpenWith ? ' browser:' + browserToOpenWith : '');
+        // console.log('🌎  Listening at http://' + caoerConfig.host + ':' + caoerConfig.port, browserToOpenWith ? ' browser:' + browserToOpenWith : '');
+        console.log('🌎  Listening at http://' + caoerConfig.host + ':' + caoerConfig.port);
+        try {
+            shell.open('http://' + caoerConfig.host + ':' + caoerConfig.port, { app: 'google chrome' });
+        }catch(e) {
+            console.log(chalk.red(e))
+        }
     });
 }
 

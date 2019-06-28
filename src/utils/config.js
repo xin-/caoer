@@ -3,7 +3,7 @@
  * notice: 
  *  1. 使用async函数需要babel-polyfill
  *  2. 使用异步import 需要babel-plugin-dynamic-import-node
- *  // 3. 如果要在react中使用异步import 可以使用plugin-syntax-dynamic-import
+ *  // 3. 如果要在代码中中使用异步import 可以使用plugin-syntax-dynamic-import
  */
 
 import 'babel-polyfill';

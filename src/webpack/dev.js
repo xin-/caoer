@@ -7,22 +7,19 @@ import autoprefixer from 'autoprefixer'
 import precss from 'precss'
 import WatchMissingNodeModulesPlugin from '../utils/WatchMissingNodeModulesPlugin'
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin'
+import blueimpTmpl from 'blueimp-tmpl'
 
 const CWD = process.cwd()
 
 export default function (config) {
     const __configuration = {
+        mode: 'development',
+
         /**
          * Devtool
          * doc: http://webpack.github.io/docs/configuration.html#devtool
          */
         devtool: config.tool,
-
-        /**
-         * switch loader to debug mode
-         * doc: http://webpack.github.io/docs/configuration.html#devtool
-         */
-        debug: true,
 
         /**
          * Entry points to the project
@@ -68,65 +65,67 @@ export default function (config) {
         externals: config.externals || {},
 
         module: {
-            preLoaders: config.eslint ? [{
-                test: /\.(js|jsx)$/,
-                loader: 'eslint-loader',
-                include: [path.resolve(CWD, config.base)],
-                exclude: /node_modules/
-            }] : [],
-            loaders: [{
+            rules: [{
                 test: /\.(js|jsx)?$/, // .jsx or .js files
-                loader: 'babel-loader',
+                use: 'babel-loader',
                 exclude: [path.resolve(CWD, 'node_modules')],
                 // query: require('./babel.dev'),
             }, {
                 test: /\.css$/,
                 include: [path.resolve(CWD, config.base, config.scss)],// extract style import from scss to separate css files
-                loader: 'style!css!postcss!resolve-url'
+                // use: 'style!css!postcss!resolve-url'
+                use: [
+                    {loader: 'style-loader'},
+                    {loader: 'css-loader'},
+                    {
+                        loader: 'postcss-loader',
+
+                    },
+                    {loader: 'resolve-url-loader'}
+                ]
             }, {
                 test: /\.less$/,
-                include: [path.resolve(CWD, config.base, config.scss)],
-                loader: 'style!css!postcss!resolve-url!less?sourceMap'
-            }, {
-                test: /\.scss$/,
-                include: [path.resolve(CWD, config.base, config.scss)],// extract style import from scss to separate css files
-                loader: 'style!css!postcss!resolve-url!sass?sourceMap&includePaths[]=' + path.resolve(CWD, 'node_modules') +
-                    '&includePaths[]=' + path.resolve(CWD, config.base)
-            }, {
-                test: /\.css$/,
-                exclude: [path.resolve(CWD, config.base, config.scss)],
-                loader: 'style!css' + (config.css_modules ? '?modules&importLoaders=1&localIdentName=[name]__[local]__[hash:base64:8]' : '') + '!postcss!resolve-url'
-            }, {
-                test: /\.less$/,
-                exclude: [path.resolve(CWD, config.base, config.scss)],
-                loader: 'style!css' + (config.css_modules ? '?modules&importLoaders=1&localIdentName=[name]__[local]__[hash:base64:8]' : '') + '!postcss!resolve-url!less?sourceMap'
-            }, {
-                test: /\.scss$/,
-                exclude: [path.resolve(CWD, config.base, config.scss)],// pack other styles into JS and wrapped within style at runtime
-                loader: 'style!css' + (config.css_modules ? '?modules&importLoaders=1&localIdentName=[name]__[local]__[hash:base64:8]': '') + '!postcss!resolve-url!sass?sourceMap' +
-                    '&includePaths[]=' + path.resolve(CWD, 'node_modules') +
-                    '&includePaths[]=' + path.resolve(CWD, config.base)
+                use: [
+                    {loader: 'style-loader'},
+                    {loader: 'css-loader'},
+                    {
+                        loader: 'postcss-loader',
+                        options: {
+                            ident: 'postcss',
+                            plugins: [
+                                autoprefixer({
+                                    // see https://browserl.ist/
+                                    // config in package.json/browserslist
+                                    remove: true 
+                                }),
+                                precss
+                            ]
+                        }
+                    },
+                    {loader: 'resolve-url-loader'},
+                    {loader: 'less-loader'}
+                ]
             }, {
                 test: /\.svg/,
-                loader: 'svg-url'
+                use: 'svg-url-loader'
             }, {
                 test: /\.(png|jpg|gif|jpeg)$/,
                 // < 20k, otherwise file-loader is used auto
-                loader: 'url?limit=' + config.base64_image_limit + '&name=' + config.assets + '/images/[name]-[hash:8].[ext]'//20k
+                use: [
+                    {
+                        loader: 'url-loader',
+                        options: {
+                            limit: config.base64_image_limit
+                        }
+                    }
+                ]
             }, {
                 test: /\.(ttf|eot|woff[1-9]?)(\?v=\d+\.\d+\.\d+)?$/,
-                loader: "file?name=" + config.assets + "/fonts/[name]-[hash:8].[ext]"
+                loader: "file-loader?name=" + config.assets + "/fonts/[name]-[hash:8].[ext]"
             }, {
                 test: /\.json$/,
-                loader: "json"
+                use: "json-loader"
             }]
-        },
-
-        postcss: [autoprefixer({ browsers: ['Chrome > 35', 'Safari > 4', 'Firefox > 30'], remove: true }), precss],
-
-        resolveLoader: {
-            root: path.join(__dirname, '..', '..',  'node_modules'),
-            fallback: [path.resolve(CWD, 'node_modules')]
         },
 
         /**
@@ -134,15 +133,17 @@ export default function (config) {
          * doc: doc: http://webpack.github.io/docs/configuration.html#resolve
          */
         resolve: {
-            root: CWD,
+            // root: CWD,
             alias: config.alias,
-            modulesDirectories: ["web_modules", "node_modules", 'bower_components'],
-            extensions: ['', '.js', '.json', '.jsx', '.scss', '.css', '.less'],
-            fallback: [path.resolve(__dirname, '..', '..', 'node_modules')]
+            // modulesDirectories: ["web_modules", "node_modules", 'bower_components'],
+            // extensions: ['.js', '.json', '.jsx', '.scss', '.css', '.less'],
+            // fallback: [path.resolve(__dirname, '..', '..', 'node_modules')]
         },
 
         optimization: {
-            splitChunks
+            // splitChunks: {
+                
+            // }
         },
         // // Split vendors
         // new webpack.optimize.CommonsChunkPlugin("vendor", "js/vendor.bundle.js"),
@@ -214,15 +215,9 @@ export default function (config) {
                     : [],
                 path.resolve(CWD)
             )
-        ],
-
-        //eslint config options. Part of the eslint-loader package
-        eslint: {
-            configFile: path.resolve(CWD, '.eslintrc')
-        }
+        ]
     }
 
-    const tmpl = import('blueimp-tmpl').tmpl
     const global_defines = {
         'API': config.api[process.env.MODE],
         'STATIC': config.static[process.env.MODE],
@@ -237,7 +232,7 @@ export default function (config) {
         for(let key in config.pages) {
             const entry = config.pages[key]
 
-            (function() {
+            !function() {
                 const _template = fs.readFileSync(entry.path, 'utf8')
                 const mockData = entry.mock && import(entry.mock)
                 const {favicon, title, keywords, description, viewport} = entry
@@ -250,19 +245,20 @@ export default function (config) {
                         keywords,
                         description,
                         viewport,
+                        inject: false,
                         templateContent: function(templateParams, compolation) {
                             if(mockData) {
                                 mockData.forEach(reg => {
                                     _template = _template.replace(reg[0], reg[1])
                                 })
                             }
-
+                            // console.log('================')
                             templateParams.configs = global_defines
-                            return tmpl(_template, templateParams)
+                            return blueimpTmpl(_template, templateParams)
                         }
                     })
                 )
-            })()
+            }()
         }
     }
 
